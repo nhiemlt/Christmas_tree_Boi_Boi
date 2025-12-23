@@ -823,18 +823,6 @@
         // --- Hệ thống tương tác (MediaPipe) ---
         async function setupMediaPipe() {
             try {
-                const video = document.getElementById("input-video");
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                
-                video.addEventListener("loadeddata", () => {
-                    document.getElementById('loading').style.display = 'none';
-                    // Bắt đầu intro sau khi camera được cấp quyền
-                    spawnMeteors();
-                    setTimeout(showCountdown, 9000);
-                });
-                
-                // Khởi tạo MediaPipe sau khi có camera
                 const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
                 const handLandmarker = await HandLandmarker.createFromOptions(vision, {
                     baseOptions: {
@@ -844,7 +832,12 @@
                     runningMode: "VIDEO", numHands: 1
                 });
                 
+                const video = document.getElementById("input-video");
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                
                 video.addEventListener("loadeddata", () => {
+                    document.getElementById('loading').style.display = 'none';
                     updateStatus("Hệ thống sẵn sàng, hãy đưa tay lên", "#0f0");
                     predictWebcam(handLandmarker, video);
                 });
@@ -1118,6 +1111,7 @@
                 initThree();
                 preloadLocalImages();
                 animate();
+                setupMediaPipe();
             }, 1500);
         }
 
@@ -1135,15 +1129,16 @@
                     count--;
                     setTimeout(displayNumber, 1000);
                 } else {
-                    setTimeout(startApp, 900);
+                    setTimeout(startApp, 200);
                 }
             }
             
             displayNumber();
         }
 
-        // Khởi động - chỉ yêu cầu camera, intro sẽ chạy sau khi được cấp quyền
-        setupMediaPipe();
+        // Kick off intro
+        spawnMeteors();
+        setTimeout(showCountdown, 9000);
     </script>
 </body>
 </html>
