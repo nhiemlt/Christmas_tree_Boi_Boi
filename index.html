@@ -690,8 +690,8 @@
                     const deltaY = handPos.y - lastHandPos.y;
                     
                     // Tăng độ nhạy để xoay mạnh hơn theo chuyển động tay
-                    if (Math.abs(deltaX) > 0.001) rotationVelocity.y += deltaX * 0.8;
-                    if (Math.abs(deltaY) > 0.001) rotationVelocity.x += deltaY * 0.5;
+                    if (Math.abs(deltaX) > 0.001) rotationVelocity.y += deltaX * 1.5;
+                    if (Math.abs(deltaY) > 0.001) rotationVelocity.x += deltaY * 1.0;
                     
                     lastHandPos.x = handPos.x;
                     lastHandPos.y = handPos.y;
@@ -1019,7 +1019,22 @@
             const theta = Math.random() * Math.PI * 2;
             
             const treePos = new THREE.Vector3(r * Math.cos(theta), h_pos, r * Math.sin(theta));
-            const scatterPos = randomSpherePoint(60);
+            
+            // Đảm bảo ảnh đầu tiên luôn ở trung tâm khi scatter để dễ nhìn thấy
+            let scatterPos;
+            if (photoMeshes.length === 0) {
+                // Ảnh đầu tiên: đặt gần trung tâm, hơi phía trước camera
+                const centerRadius = 15 + Math.random() * 10;
+                const centerTheta = Math.random() * Math.PI * 2;
+                const centerPhi = Math.PI / 2 + (Math.random() - 0.5) * 0.4; // Gần mặt phẳng ngang
+                scatterPos = new THREE.Vector3(
+                    centerRadius * Math.sin(centerPhi) * Math.cos(centerTheta),
+                    (Math.random() - 0.5) * 15, // Gần tầm nhìn trung tâm
+                    centerRadius * Math.sin(centerPhi) * Math.sin(centerTheta)
+                );
+            } else {
+                scatterPos = randomSpherePoint(60);
+            }
 
             mesh.userData = { 
                 treePos, 
